@@ -1,22 +1,20 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import Navbar from "./Components/Navbar/Navbar.tsx";
-import LandingPage from "./Components/Pages/landingPage.tsx";
+import Navbar from "./Components/Navbar/navbar.tsx";
+import VideoCards from "./Components/Pages/cards.tsx";
+import VideoPlayer from "./Components/Pages/videoPlayer.tsx";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
   const [searchBy, setSearchBy] = useState("");
   const [videoData, setVideoData] = useState([]);
-  // const API = process.env.API_KEY
+  const [selectedVideo, setSelectedVideo] = useState();
+
   const fetchVideoList = async () => {
     try {
       const response = await fetch(
-        `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&maxResults=50&regionCode=IN&key=AIzaSyAG6Jvn5UCq7RDgJ18OoFsW3ozoWYGB370`
+        `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cplayer&chart=mostPopular&maxResults=50&regionCode=IN&key=AIzaSyAG6Jvn5UCq7RDgJ18OoFsW3ozoWYGB370`
       );
-
-      if (!response.ok) {
-        throw new Error("Something went wrong");
-      }
-
       const { items } = await response.json();
       setVideoData(items);
     } catch (error) {
@@ -37,20 +35,39 @@ function App() {
   };
 
   useEffect(() => {
-    searchBy.length > 1 && handleSearch(searchBy);
+    const debouncer = setTimeout(() => {
+      searchBy.length > 1 ? handleSearch(searchBy) : fetchVideoList();
+      clearInterval(debouncer);
+    }, 2000);
   }, [searchBy]);
 
   useEffect(() => {
     fetchVideoList();
   }, []);
 
-  console.log(videoData);
-
   return (
-    <div className="App">
-      <Navbar searchBy={searchBy} setSearchBy={setSearchBy} />
-      <LandingPage videoData={videoData} />
-    </div>
+    <Router>
+      <Navbar setSearchBy={setSearchBy} />
+      <Routes>
+        <Route
+          path="/"
+          exact
+          element={
+            <VideoCards
+              videoData={videoData}
+              setSelectedVideo={setSelectedVideo}
+            />
+          }
+        />
+        <Route
+          path="/videoPlayer"
+          exact
+          element={
+            <VideoPlayer videoData={videoData} selectedVideo={selectedVideo} />
+          }
+        />
+      </Routes>
+    </Router>
   );
 }
 
