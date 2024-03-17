@@ -8,13 +8,16 @@ import { IoNotificationsOutline } from "react-icons/io5";
 import { TiMicrophone } from "react-icons/ti";
 import { Link } from "react-router-dom";
 
-export default function Navbar({ setSearchBy }) {
+export default function Navbar({ setSearchBy, setShowSidebar, showSidebar }) {
   return (
     <nav className="w-full h-[5rem] bg-black fixed flex flex-row justify-between">
       <div className="flex flex-row">
         <FiMenu
           color={"white"}
           className="pl-2 mx-2 h-full w-[2rem] cursor-pointer"
+          onClick={() => {
+            showSidebar ? setShowSidebar(false) : setShowSidebar(true);
+          }}
         />
         <Link to={"/"}>
           <img

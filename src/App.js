@@ -1,70 +1,40 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import Navbar from "./Components/Navbar/navbar.tsx";
-import VideoCards from "./Components/Pages/cards.tsx";
 import VideoPlayer from "./Components/Pages/videoPlayer.tsx";
+import LandingPage from "./Components/Pages/landingPage.tsx";
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
   const [searchBy, setSearchBy] = useState("");
-  const [videoData, setVideoData] = useState([]);
-  const [selectedVideo, setSelectedVideo] = useState();
-
-  const fetchVideoList = async () => {
-    try {
-      const response = await fetch(
-        `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics%2Cplayer&chart=mostPopular&maxResults=50&regionCode=IN&key=AIzaSyAG6Jvn5UCq7RDgJ18OoFsW3ozoWYGB370`
-      );
-      const { items } = await response.json();
-      setVideoData(items);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleSearch = async (searchBy) => {
-    try {
-      const response = await fetch(
-        `https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&q=${searchBy}s&key=AIzaSyAG6Jvn5UCq7RDgJ18OoFsW3ozoWYGB370`
-      );
-      const { items } = await response.json();
-      setVideoData(items);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    const debouncer = setTimeout(() => {
-      searchBy.length > 1 ? handleSearch(searchBy) : fetchVideoList();
-      clearInterval(debouncer);
-    }, 2000);
-  }, [searchBy]);
-
-  useEffect(() => {
-    fetchVideoList();
-  }, []);
+  const [selectedVideo, setSelectedVideo] = useState({});
+  const [showSidebar, setShowSidebar] = useState(false);
+  // const API = process.env.API_KEY
 
   return (
     <Router>
-      <Navbar setSearchBy={setSearchBy} />
+      <Navbar
+        setSearchBy={setSearchBy}
+        showSidebar={showSidebar}
+        setShowSidebar={setShowSidebar}
+      />
       <Routes>
         <Route
           path="/"
           exact
           element={
-            <VideoCards
-              videoData={videoData}
+            <LandingPage
+              searchBy={searchBy}
               setSelectedVideo={setSelectedVideo}
+              showSidebar={showSidebar}
             />
           }
         />
         <Route
           path="/videoPlayer"
           exact
-          element={
-            <VideoPlayer videoData={videoData} selectedVideo={selectedVideo} />
-          }
+          element={<VideoPlayer selectedVideo={selectedVideo} />}
         />
       </Routes>
     </Router>
