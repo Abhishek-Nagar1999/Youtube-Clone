@@ -17,5 +17,5 @@ export const formatNumber = (number) => {
     const hundred = Math.floor(number / 100);
     return `${hundred}`;
   }
-  return number.toString();
+  return number?.toString();
 };

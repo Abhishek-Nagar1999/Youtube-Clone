@@ -2,27 +2,37 @@ import React from "react";
 import { formatNumber, formatText } from "../../utils/helper";
 import { useNavigate } from "react-router-dom";
 
-export default function VideoCards({ videoData, setSelectedVideo }) {
+export default function VideoCards({
+  videoData,
+  setSelectedVideo,
+  showSidebar,
+}) {
   const navigate = useNavigate();
 
   const handleIndex = (index: any) => {
-    setSelectedVideo(index);
+    setSelectedVideo(videoData[index]);
     navigate("/videoPlayer", { replace: true });
   };
 
   return (
-    <div className="bg-black grid grid-cols-12 pt-[5rem]">
-      {videoData?.map((items: any, index: number) => {
+    <div
+      className={`bg-black flex flex-row flex-wrap justify-between pt-[5rem] ${
+        showSidebar && "ml-[13rem] px-[1rem]"
+      }`}
+    >
+      {videoData?.map((items: any, index: any) => {
         return (
           <div
-            className="w-[27rem] h-[22rem]  border col-span-3 rounded-2xl m-1 cursor-pointer "
+            className={` ${
+              showSidebar ? "w-[24rem] h-[22rem]" : "w-[22rem] h-[20rem]"
+            } rounded-2xl my-1 cursor-pointer `}
             key={index}
             onClick={() => handleIndex(index)}
           >
             <img
               alt="thumbnail"
               src={items?.snippet?.thumbnails?.medium?.url}
-              className="mt-0 h-[75%] w-[100%] rounded-2xl"
+              className="mt-0 h-[65%] w-[100%] rounded-2xl"
             />
             <p className="text-white font-medium text-md text-left ">
               {formatText(items?.snippet?.title)}
